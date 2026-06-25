@@ -102,8 +102,8 @@ OmniData Studio is built for a seamless, plug-and-play developer experience.
 ### 1. Clone & Configure
 
 ```bash
-git clone [https://github.com/C4RB0Nite/OmniData-Studio.git](https://github.com/C4RB0Nite/OmniData-Studio.git)
-cd "OmniData Studio"
+git clone https://github.com/C4RB0Nite/omnidata-studio.git
+cd omnidata-studio
 
 ```
 
@@ -138,10 +138,14 @@ chmod +x start.sh
 
 Upon execution, the script will verify system dependencies, boot the FastAPI backend on port 8000, and launch the Next.js interface on port 3000.
 
+**Type this on your browser:**
+```
+localhost:3000
+```
 ---
 
 ## Connect
 
 Developed by **C4RB0Nite**.
 
-Follow for updates and AI engineering insights: [X (Twitter)](https://www.google.com/search?q=https://x.com/C4RB0Nite)
+Follow for updates and AI engineering insights: [X (Twitter)](https://x.com/C4RB0Nite)
