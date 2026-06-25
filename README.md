@@ -1,51 +1,111 @@
-# OmniData Studio: Agentic Data Operating System
+<div align="center">
 
-OmniData Studio is a multi-agent cognitive architecture designed to bridge the gap between unstructured semantic data and strict relational databases. It serves as an AI-native workspace where natural language instructions are compiled into deterministic database operations, enabling seamless data analysis and management.
+# OmniData Studio
+**Enterprise-Grade Agentic Data Operating System**
 
-## Core AI Capabilities
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase-336791?logo=postgresql)](https://supabase.com/)
+[![Llama-3](https://img.shields.io/badge/Model-Llama_3.3_70B-blue?logo=meta)](https://groq.com/)
+[![Gemini](https://img.shields.io/badge/Vision-Gemini_2.5_Flash-8E75B2?logo=google)](https://aistudio.google.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-OmniData utilizes a multi-agent workflow to ensure high-accuracy, context-aware interaction with your data environment.
+</div>
 
-* **Cognitive Router (Llama-3.1-8B):** Operates as the deterministic gatekeeper. It classifies incoming queries in milliseconds, routing them strictly to either the SQL execution engine or the Vector RAG (Retrieval-Augmented Generation) engine based on intent.
-* **Database Engineer Agent (Llama-3.3-70B):** Handles structural data manipulation. It performs live schema introspection to understand data types and table relationships, then translates natural language into type-safe PostgreSQL syntax.
-* **Semantic Analyst Agent (ChromaDB + Llama-3.3-70B):** Manages unstructured data. It utilizes local high-dimensional vector embeddings to perform semantic search, grounding the AI’s reasoning in relevant historical context.
-* **Multi-Modal ETL Pipeline:** An intelligent API gateway that handles diverse inputs:
-* **Deterministic:** Automatically parses CSV files into Pandas DataFrames for immediate SQL insertion.
-* **Multi-Modal:** Leverages Google Gemini 2.5 Flash to parse complex PDF invoices, extracting structured JSON entities while performing a dual-write operation: relational data to PostgreSQL and raw semantic text to ChromaDB.
+## Executive Summary
 
+OmniData Studio is a multi-agent cognitive architecture designed to bridge the gap between unstructured semantic data and strict relational databases. Operating as an AI-native workspace, the platform features a low-latency routing engine that classifies user intent, dynamically introspects live PostgreSQL schemas, and executes deterministic database commands entirely through natural language.
 
+Engineered for maximum efficiency, the system operates with a minimal local hardware footprint. Heavy cognitive processing and inference are entirely offloaded to high-speed cloud infrastructure, allowing deployment and execution on standard development machines without local GPU requirements.
 
-## Technical Specifications
+---
 
-* **Frontend:** Next.js 15, React, Tailwind CSS, Base UI, TypeScript.
-* **Backend:** Python 3.12, FastAPI, SQLAlchemy, Pandas.
-* **AI Orchestration:** Groq API (Llama-3 models), Google GenAI API (Gemini).
-* **Databases:** Supabase (PostgreSQL), ChromaDB (Vector Storage).
+## System Architecture
 
-## Requirements
+The core of OmniData is a deterministic routing workflow, ensuring zero-hallucination database manipulations and context-aware semantic retrieval.
 
-Before running the application, ensure your local environment is configured with:
-
-1. **Python 3.12+** (with the `pip` package manager).
-2. **Node.js 18+** (with `npm`).
-3. **API Keys:** Valid keys for the following services:
-* Supabase (PostgreSQL Connection URI)
-* Groq API
-* Google GenAI API
-
-
-
-## Installation and Usage
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/C4RB0Nite/omnidata-studio.git
-cd omnidata-studio
+```mermaid
+graph TD;
+    Client[Next.js Frontend] -->|Natural Language Intent| API(FastAPI Gateway);
+    API --> Router{Cognitive Router<br/>Llama-3.1-8B};
+    
+    Router -- Structural Data Query --> DB_Agent[Database Engineer Agent<br/>Llama-3.3-70B];
+    Router -- Unstructured Query --> RAG_Agent[Semantic Analyst Agent<br/>Llama-3.3-70B];
+    
+    DB_Agent <-->|Introspection & Execution| Postgres[(Supabase PostgreSQL)];
+    RAG_Agent <-->|Vector Retrieval| Chroma[(ChromaDB)];
+    
+    Postgres --> UI_Ledger[Data Grid UI];
+    Chroma --> UI_Ledger;
 
 ```
 
-### 2. Configuration
+### 1. The Cognitive Router
+
+Acts as the semantic gatekeeper. It evaluates the user's natural language intent in milliseconds and routes the execution thread deterministically to either the SQL Engine or the Vector RAG Engine.
+
+### 2. The Database Engineer Agent
+
+Handles structural data manipulation with high precision:
+
+* **Dynamic Introspection:** Automatically scans the live Supabase PostgreSQL schema to map exact column data types and relationships.
+* **Context Injection:** Injects the live environmental reality into the LLM's context window.
+* **Strict Execution:** Translates natural language into type-safe PostgreSQL syntax (handling complex date-math and numeric casting) and executes it directly against the cloud database.
+
+### 3. The Semantic Analyst Agent
+
+Handles unstructured data retrieval. Utilizes local high-dimensional vector embeddings to retrieve mathematically relevant document chunks, executing Context-Augmented Generation (RAG) to ground AI reasoning in historical data.
+
+---
+
+## Multi-Modal ETL Ingestion Pipeline
+
+The platform includes an intelligent API Gateway designed for automated data ingestion:
+
+* **Deterministic Path:** Automatically parses uploaded CSV files into Pandas DataFrames and generates instant, schema-matched SQL tables in Supabase.
+* **Multi-Modal Path:** Leverages Google's **Gemini 2.5 Flash** (Vision/Language) to parse unstructured PDF invoices. It enforces strict JSON schema extraction and executes a **Dual-Write**: pushing structured relational data to PostgreSQL while embedding raw semantic text into ChromaDB.
+
+---
+
+## Technical Stack
+
+**Frontend Architecture**
+
+* Next.js 15 (Turbopack)
+* React & TypeScript
+* Tailwind CSS & Base UI
+
+**Backend Architecture**
+
+* Python 3.12
+* FastAPI & Uvicorn
+* SQLAlchemy & Pandas
+
+**AI & Database Infrastructure**
+
+* **Orchestration:** Groq API, Google GenAI API
+* **Relational Database:** Supabase (PostgreSQL)
+* **Vector Storage:** ChromaDB
+
+---
+
+## Deployment & Execution
+
+OmniData Studio is built for a seamless, plug-and-play developer experience.
+
+### Prerequisites
+
+* Python 3.12+
+* Node.js 18+
+* Active API Keys for Groq, Google GenAI, and Supabase.
+
+### 1. Clone & Configure
+
+```bash
+git clone [https://github.com/C4RB0Nite/OmniData-Studio.git](https://github.com/C4RB0Nite/OmniData-Studio.git)
+cd "OmniData Studio"
+
+```
 
 Create a `.env` file in the root directory and populate it with your credentials:
 
@@ -56,11 +116,11 @@ SUPABASE_URL=postgresql://your_connection_uri
 
 ```
 
-### 3. Execution
+### 2. Launching the Environment
 
-The repository includes a launch script that automates environment verification and server startup.
+The repository includes automated execution scripts that bypass manual dependency installation.
 
-**For Windows:**
+**For Windows Users:**
 Double-click `start.bat` or run:
 
 ```cmd
@@ -68,22 +128,24 @@ Double-click `start.bat` or run:
 
 ```
 
-**For Mac/Linux:**
+**For Mac/Linux Users:**
 
 ```bash
-chmod +x start_mac_linux.sh
-./start_mac_linux.sh
+chmod +x start.sh
+./start.sh
 
 ```
 
-Upon execution, the script will verify your dependencies, boot the backend API on port 8000, and launch the frontend interface on port 3000.
+Upon execution, the script will verify system dependencies, boot the FastAPI backend on port 8000, and launch the Next.js interface on port 3000.
 
-## License
-
-Distributed under the MIT License.
+---
 
 ## Connect
 
 Developed by **C4RB0Nite**.
 
-Follow for updates and AI engineering insights: [https://x.com/C4RB0Nite](https://x.com/C4RB0Nite)
+Follow for updates and AI engineering insights: [X (Twitter)](https://www.google.com/search?q=https://x.com/C4RB0Nite)
+
+```
+
+```
