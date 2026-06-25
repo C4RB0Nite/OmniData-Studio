@@ -1,0 +1,10 @@
+fastapi 
+uvicorn 
+pandas 
+SQLAlchemy 
+psycopg2-binary 
+chromadb 
+groq 
+google-genai 
+PyPDF2 
+python-dotenv

@@ -1,18 +1,89 @@
-# Cognitive AI Document Agent (RAG Architecture)
+# OmniData Studio: Agentic Data Operating System
 
-## Overview
-An enterprise-grade Retrieval-Augmented Generation (RAG) pipeline. This system doesn't just read documents; it forms procedural memories. It extracts unstructured data from PDFs, encodes the semantic meaning into a local Vector Database, and utilizes a central LLM reasoning engine to answer financial queries based on historical context.
+OmniData Studio is a multi-agent cognitive architecture designed to bridge the gap between unstructured semantic data and strict relational databases. It serves as an AI-native workspace where natural language instructions are compiled into deterministic database operations, enabling seamless data analysis and management.
 
-## System Architecture
-1. **Ingestion Layer:** Utilizes `PyPDF2` to scrape raw text from batch invoices and forces Google GenAI to format the chaotic text into strict JSON schemas.
-2. **Semantic Memory Bank:** Integrates `ChromaDB` to convert textual JSON data into high-dimensional vector embeddings, allowing for meaning-based (semantic) data retrieval rather than flat keyword matching.
-3. **Central Reasoning Engine:** A Python-based executive controller that intercepts user queries, retrieves mathematically relevant historical context from the Vector DB, and routes the combined payload to the AI for highly accurate, context-aware decision making.
+## Core AI Capabilities
 
-## Tech Stack
-* Python 3.x
-* Google GenAI API (Gemini 2.5 Flash)
-* ChromaDB (Local Vector Storage)
-* PyPDF2
+OmniData utilizes a multi-agent workflow to ensure high-accuracy, context-aware interaction with your data environment.
 
-## Why this matters
-This modular RAG architecture completely eliminates the hallucination risks of standard LLMs by grounding the AI's reasoning entirely in a closed-loop, mathematically retrievable historical database.
+* **Cognitive Router (Llama-3.1-8B):** Operates as the deterministic gatekeeper. It classifies incoming queries in milliseconds, routing them strictly to either the SQL execution engine or the Vector RAG (Retrieval-Augmented Generation) engine based on intent.
+* **Database Engineer Agent (Llama-3.3-70B):** Handles structural data manipulation. It performs live schema introspection to understand data types and table relationships, then translates natural language into type-safe PostgreSQL syntax.
+* **Semantic Analyst Agent (ChromaDB + Llama-3.3-70B):** Manages unstructured data. It utilizes local high-dimensional vector embeddings to perform semantic search, grounding the AI’s reasoning in relevant historical context.
+* **Multi-Modal ETL Pipeline:** An intelligent API gateway that handles diverse inputs:
+* **Deterministic:** Automatically parses CSV files into Pandas DataFrames for immediate SQL insertion.
+* **Multi-Modal:** Leverages Google Gemini 2.5 Flash to parse complex PDF invoices, extracting structured JSON entities while performing a dual-write operation: relational data to PostgreSQL and raw semantic text to ChromaDB.
+
+
+
+## Technical Specifications
+
+* **Frontend:** Next.js 15, React, Tailwind CSS, Base UI, TypeScript.
+* **Backend:** Python 3.12, FastAPI, SQLAlchemy, Pandas.
+* **AI Orchestration:** Groq API (Llama-3 models), Google GenAI API (Gemini).
+* **Databases:** Supabase (PostgreSQL), ChromaDB (Vector Storage).
+
+## Requirements
+
+Before running the application, ensure your local environment is configured with:
+
+1. **Python 3.12+** (with the `pip` package manager).
+2. **Node.js 18+** (with `npm`).
+3. **API Keys:** Valid keys for the following services:
+* Supabase (PostgreSQL Connection URI)
+* Groq API
+* Google GenAI API
+
+
+
+## Installation and Usage
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/C4RB0Nite/omnidata-studio.git
+cd "OmniData Studio"
+
+```
+
+### 2. Configuration
+
+Create a `.env` file in the root directory and populate it with your credentials:
+
+```text
+GROQ_API_KEY=your_key_here
+GEMINI_API_KEY=your_key_here
+SUPABASE_URL=postgresql://your_connection_uri
+
+```
+
+### 3. Execution
+
+The repository includes a launch script that automates environment verification and server startup.
+
+**For Windows:**
+Double-click `start.bat` or run:
+
+```cmd
+.\start.bat
+
+```
+
+**For Mac/Linux:**
+
+```bash
+chmod +x start_mac_linux.sh
+./start_mac_linux.sh
+
+```
+
+Upon execution, the script will verify your dependencies, boot the backend API on port 8000, and launch the frontend interface on port 3000.
+
+## License
+
+Distributed under the MIT License.
+
+## Connect
+
+Developed by **C4RB0Nite**.
+
+Follow for updates and AI engineering insights: [https://x.com/C4RB0Nite](https://x.com/C4RB0Nite)
