@@ -145,7 +145,3 @@ Upon execution, the script will verify system dependencies, boot the FastAPI bac
 Developed by **C4RB0Nite**.
 
 Follow for updates and AI engineering insights: [X (Twitter)](https://www.google.com/search?q=https://x.com/C4RB0Nite)
-
-```
-
-```
