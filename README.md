@@ -41,7 +41,7 @@ Before running the application, ensure your local environment is configured with
 
 ```bash
 git clone https://github.com/C4RB0Nite/omnidata-studio.git
-cd "OmniData Studio"
+cd omnidata-studio
 
 ```
 
