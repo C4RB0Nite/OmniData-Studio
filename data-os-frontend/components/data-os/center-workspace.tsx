@@ -20,8 +20,9 @@ export function CenterWorkspace() {
   const [tab, setTab] = useState<"table" | "viz">("table")
   const [ledgerData, setLedgerData] = useState<LedgerRow[]>([])
   
-  // THE FIX: Target a table that actually exists in your database!
-  const [sqlQuery, setSqlQuery] = useState(`SELECT * FROM "bills" LIMIT 50;`)
+  // THE FIX: Use a safe system query as the default instead of a hardcoded table name
+  // This will never crash, even if the database is completely empty.
+  const [sqlQuery, setSqlQuery] = useState(`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' LIMIT 1;`)
   
   const [isLoading, setIsLoading] = useState(false)
   const [topPct, setTopPct] = useState(60)
@@ -143,32 +144,34 @@ export function CenterWorkspace() {
 
         <div className="min-h-0 flex-1 overflow-auto">
           {tab === "table" ? (
-            <table className="w-full border-collapse text-sm">
-              <thead className="sticky top-0 z-10 bg-[#0e0e0e]">
-                <tr className="bg-card">
-                  {columns.map((col, idx) => (
-                    <th key={idx} className="border-b border-r border-border px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      {col}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {ledgerData.length === 0 ? (
-                  <tr><td className="p-4 text-muted-foreground text-xs italic text-center">No data found or query returned 0 rows.</td></tr>
-                ) : (
-                  ledgerData.map((row, i) => (
-                    <tr key={i} className="group hover:bg-accent/50 transition-colors">
-                      {columns.map((col, idx) => (
-                        <td key={idx} className="border-b border-r border-border px-3 py-2 font-mono text-xs text-foreground/90 truncate max-w-[200px]" title={String(row[col])}>
-                          {String(row[col])}
-                        </td>
-                      ))}
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+            <div className="min-w-full inline-block align-middle">
+              <table className="min-w-full border-collapse text-sm table-auto">
+                <thead className="sticky top-0 z-10 bg-[#0e0e0e] shadow-sm">
+                  <tr className="bg-card">
+                    {columns.map((col, idx) => (
+                      <th key={idx} className="border-b border-r border-border px-4 py-2.5 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                        {col}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {ledgerData.length === 0 ? (
+                    <tr><td className="p-4 text-muted-foreground text-xs italic text-center">No data found or query returned 0 rows.</td></tr>
+                  ) : (
+                    ledgerData.map((row, i) => (
+                      <tr key={i} className="group hover:bg-accent/50 transition-colors">
+                        {columns.map((col, idx) => (
+                          <td key={idx} className="border-b border-r border-border px-4 py-2 font-mono text-xs text-foreground/90 whitespace-nowrap max-w-md overflow-hidden text-ellipsis" title={String(row[col])}>
+                            {String(row[col])}
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           ) : (
             <div className="flex h-full flex-col p-6 overflow-hidden">
               <p className="mb-4 text-sm font-medium text-foreground tracking-wide">

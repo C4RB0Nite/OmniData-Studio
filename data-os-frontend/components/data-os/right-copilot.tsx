@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 /**
  * OmniData Studio - AI Copilot
  * Context-aware intelligent assistant. Interfaces directly with the OmniData
- * Cognitive Router (Agent 1) to execute SQL manipulations or Semantic Vector retrieval.
+ * Cognitive Router to execute SQL manipulations or Semantic Vector retrieval.
  */
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
@@ -29,7 +29,9 @@ export function RightCopilot() {
   const [dbSchema, setDbSchema] = useState<TableSchema[]>([])
   const [tableGroups, setTableGroups] = useState<Record<string, string[]>>({})
   const [selectedContext, setSelectedContext] = useState<string>("All")
+  
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     // 1. Restore Chat History
@@ -79,6 +81,14 @@ export function RightCopilot() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
+  // Dynamic Textarea Auto-Resize Logic
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto"
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 160)}px`
+    }
+  }, [input])
+
   const clearChat = () => {
     const initMessage: Message[] = [{ id: 0, role: "assistant", content: "System operational. Connected to Database Cloud. Awaiting your query." }]
     setMessages(initMessage)
@@ -109,28 +119,57 @@ export function RightCopilot() {
 
     const contextualizedQuery = `${contextInstruction}${text}`
 
+    // SMART MEMORY EXTRACTION
+    // Maps the current chat state into a clean array for the backend
+    const historyPayload = messages.map(msg => ({
+      role: msg.role === "assistant" ? "assistant" : "user",
+      content: msg.content
+    }))
+
     try {
       const response = await fetch(`${API_BASE}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: contextualizedQuery }),
+        body: JSON.stringify({ 
+          query: contextualizedQuery,
+          history: historyPayload 
+        }),
       })
 
       const data = await response.json()
 
       if (data.status === "success") {
-        const routeBadge = data.route?.includes("SQL") ? "🎯 [Routed to SQL Engine]" : "🧠 [Routed to Semantic Vector]";
+        const routeBadge = data.route?.includes("SQL") 
+          ? "[Routed to SQL Engine]" 
+          : "[Routed to Semantic Vector]";
 
+        let cleanResponse = data.response;
+
+        // SMART UI INTERCEPTOR
         if (data.sql) {
+          // 1. Dispatch SQL silently to the data grid editor
           window.dispatchEvent(new CustomEvent("AI_GENERATED_SQL", { detail: data.sql }))
           
+          // 2. Regex to find and completely scrub markdown code blocks from the chat
+          const sqlBlockRegex = /```(?:sql)?\n[\s\S]*?```/gi;
+          cleanResponse = cleanResponse.replace(sqlBlockRegex, "").trim();
+
+          // 3. Fallback if the AI only replied with a code block
+          if (!cleanResponse) {
+             cleanResponse = "Analysis complete.";
+          }
+
+          // 4. Append professional completion notification
+          cleanResponse += "\n\n*Query dynamically generated and routed to the execution environment.*";
+
+          // Check for DDL statements to refresh schema
           const upperSql = data.sql.toUpperCase()
           if (upperSql.includes("CREATE") || upperSql.includes("DROP") || upperSql.includes("ALTER") || upperSql.includes("RENAME")) {
             setTimeout(() => window.dispatchEvent(new CustomEvent("REFRESH_SCHEMA")), 1000)
           }
         }
 
-        setMessages((m) => m.map((msg) => msg.id === aiPlaceholderId ? { ...msg, content: `${routeBadge}\n\n${data.response}` } : msg))
+        setMessages((m) => m.map((msg) => msg.id === aiPlaceholderId ? { ...msg, content: `${routeBadge}\n\n${cleanResponse}` } : msg))
       } else {
         setMessages((m) => m.map((msg) => msg.id === aiPlaceholderId ? { ...msg, content: `Error: ${data.response}` } : msg))
       }
@@ -167,14 +206,14 @@ export function RightCopilot() {
             <option value="All">All Tables (Global Search)</option>
             
             {Object.entries(tableGroups).map(([groupName, tables]) => (
-              <optgroup key={groupName} label={`📁 ${groupName} (Group)`}>
+              <optgroup key={groupName} label={`[Group] ${groupName}`}>
                 <option value={`GROUP_${groupName}`}>-- Entire {groupName} Group --</option>
                 {tables.map(t => <option key={t} value={t}>{t}</option>)}
               </optgroup>
             ))}
 
             {ungroupedTables.length > 0 && (
-              <optgroup label="📄 ALL (Ungrouped)">
+              <optgroup label="[Ungrouped Tables]">
                 {ungroupedTables.map((table, idx) => <option key={idx} value={table.table_name}>{table.table_name}</option>)}
               </optgroup>
             )}
@@ -198,7 +237,20 @@ export function RightCopilot() {
 
       <div className="shrink-0 border-t border-border p-3">
         <div className="flex items-end gap-2 rounded-lg border border-border bg-input p-2 focus-within:border-primary/50">
-          <textarea value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send() } }} rows={1} disabled={isThinking} placeholder={isThinking ? "Processing pipeline..." : "Ask about your data..."} className="max-h-32 flex-1 resize-none bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none disabled:opacity-50" />
+          <textarea 
+            ref={textareaRef}
+            value={input} 
+            onChange={(e) => setInput(e.target.value)} 
+            onKeyDown={(e) => { 
+              if (e.key === "Enter" && !e.shiftKey) { 
+                e.preventDefault(); 
+                send(); 
+              } 
+            }} 
+            disabled={isThinking} 
+            placeholder={isThinking ? "Processing pipeline..." : "Ask about your data..."} 
+            className="flex-1 resize-none bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none disabled:opacity-50 overflow-y-auto py-1" 
+          />
           <button onClick={send} disabled={!input.trim() || isThinking} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-40">
             <ArrowUp className="h-4 w-4" />
           </button>
